@@ -1,0 +1,20 @@
+{
+  "name": "betcrawler",
+  "version": "1.0.0",
+  "description": "Automated bot designed to make online bets",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/index.js"
+  },
+  "keywords": [
+    "puppeteer"
+  ],
+  "author": "Matheus F. Ribeiro",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "puppeteer": "^20.5.0",
+    "random-useragent": "^0.5.0"
+  }
+}
