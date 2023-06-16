@@ -1,3 +1,4 @@
 module.exports = {
-  url: 'https://br.betano.com/sport/futebol/'
+  url: 'https://br.betano.com/sport/futebol/',
+  apiKey: ''
 }

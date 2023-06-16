@@ -2,10 +2,11 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const randomUseragent = require('random-useragent')
+const request = require('request')
 //const userAgent = require('user-agents');
-const {waitAndClick, waitAndType} = require('../lib/helpers')
+const {waitAndClick, waitAndType, sleep} = require('../lib/helpers')
 const { executablePath } = require("puppeteer"); 
-const { url } = require('../config');
+const { url, apiKey } = require('../config');
 const {bypass} = require('../bypass')
 
 
@@ -26,7 +27,7 @@ describe("The Bet Crawler", () => {
 
     browser = await puppeteer.launch({
       headless: false,
-      executablePath: executablePath(),//'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      executablePath: executablePath() || 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
       slowMo: 10,
       devtools: false,
       defaultViewport: null,
@@ -35,13 +36,15 @@ describe("The Bet Crawler", () => {
         "--no-sandbox",
         "--disabel-setui-sandbox",
         "--disable-web-security",
+        "--incognito",
       ],
     });
 
      //Randomize User agent or Set a valid one
      userAgent = randomUseragent.getRandom();
      UA = userAgent || USER_AGENT;
-     page = await browser.newPage();
+     const context = await browser.createIncognitoBrowserContext()
+     page = await context.newPage();
 
     //Randomize viewport size
     await page.setViewport({
@@ -51,7 +54,7 @@ describe("The Bet Crawler", () => {
       hasTouch: false,
       isLandscape: false,
       isMobile: false,
-  });
+    });
 
     await page.setUserAgent(UA);
     await page.setJavaScriptEnabled(true);
@@ -98,6 +101,14 @@ describe("The Bet Crawler", () => {
       });
     });
 
+    // Mock date
+    browser.on('targetchanged', async target => {
+      const targetPage = await target.page();
+      const client = await targetPage.target().createCDPSession();
+      await client.send('Runtime.evaluate', {
+        expression: `Date.now = function() { return 0; }`
+      });
+    });
 
     //page = await browser.newPage()
     //await page.setUserAgent(random_useragent.getRandom())
@@ -107,7 +118,7 @@ describe("The Bet Crawler", () => {
   })
 
   after(async () => {
-    browser.close()
+    //browser.close()
   })
 
   it('Should open the browser...', async () => {
@@ -120,26 +131,21 @@ describe("The Bet Crawler", () => {
   it('Should login into account...', async () => {
 
     const usernameLogin = 'test'
-    //const passwordLogin = '67AcrJ26!@#$'
+    //const passwordLogin = ''
 
     const loginBtn = '.GTM-login'
     const usernameId = '#username'
-    bypass()
+    
 
     
-    await new Promise(r => setTimeout(r, 2000))
+    await sleep(2)
     await waitAndClick(page, loginBtn)
-    await new Promise(r => setTimeout(r, 2000))
-    await page.keyboard.press('Enter')
-    await new Promise(r => setTimeout(r, 2000))
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
+    await sleep(5)
+
     
 
 
-    await new Promise(r => setTimeout(r, 100000))
+    //await new Promise(r => setTimeout(r, 100000))
 
 
     //await waitAndType(page, usernameId, usernameLogin)
