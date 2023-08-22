@@ -7,18 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node src/crawler/crawler.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/matheusfribeiro/TheBetCrawler.git"
-  },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/matheusfribeiro/TheBetCrawler/issues"
-  },
-  "homepage": "https://github.com/matheusfribeiro/TheBetCrawler#readme",
   "dependencies": {
-    "puppeteer": "^21.1.0",
+    "dotenv": "^16.3.1",
+    "puppeteer": "^19.11.1",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
