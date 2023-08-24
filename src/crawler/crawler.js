@@ -7,9 +7,9 @@ const {
   checkBox,
   waitAndType,
   getDate,
-  betTypeHomeOrAway,
-  waitButtonEnabledClick,
-  placeBetConfirmModal,
+  betTypeHomeAwayBothDouble,
+  confirmMultipleBet,
+  betTypeOverUnder,
 } = require("./helpers/helpers");
 require("dotenv").config();
 
@@ -18,7 +18,7 @@ puppeteerExtra.use(StealthPlugin());
 
 const puppeteerOptions = {
   headless: false, // Whether to run the browser in headless mode ('new') or show the browser window (false)
-  //slowMo: 1, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
+  slowMo: 1, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
   devtools: false, // Whether to enable DevTools in the browser
   defaultViewport: { width: 1300, height: 900 }, // Sets the initial page viewport. Set to `null` to use the default (800x600).
   args: [
@@ -51,7 +51,7 @@ async function theBetCrawler() {
       await checkBox(page, ".box-image", 3000);
       await waitAndClick(page, ".cookies-button.cookies-accept-button");
     } catch (error) {
-      console.log("Error:", error);
+      throw new Error("Error in opening the page: ", error);
     }
 
     //Section 2 - Login
@@ -78,26 +78,29 @@ async function theBetCrawler() {
 
       console.log("The login was successful");
     } catch (error) {
-      console.log("Error on login:", error);
+      throw new Error("Error in logging in: ", error);
     }
 
     //Section 3 - Scraping games and validating
     try {
-      const team = "sc internacional";
-      
+      const team = "palmeiras";
+
+      // Clicks on search icon
       await waitAndClick(page, 'mat-icon.btn-search[role="img"]');
+      // Waits for the input and type team name
       await waitAndType(
         page,
         'input.mat-autocomplete-trigger.mat-input-element[role="combobox"]',
         team
       );
+      // Clicks on the first option of the dropdown
       await waitAndClick(page, "#mat-option-0");
 
+      // Get the text content from the <div> element
       const divElement = await page.waitForSelector(
         "div.event-date.ng-star-inserted"
       );
 
-      // Get the text content from the <div> element
       const divContent = await page.evaluate(
         (el) => el.textContent,
         divElement
@@ -116,19 +119,51 @@ async function theBetCrawler() {
       // Fail fast
       if (currentDate !== matchDate) {
         console.log("Game date does not match current date.");
-        throw new Error("Script halted due to validation mismatch.");
+        throw new Error(`Script halted due to validation mismatch`);
+      }
+
+
+      //Check if team is home or away
+      const teamSelector = ".team-name";
+      const teamElements = await page.$$(teamSelector);
+      let teamName = ''
+
+      let teamPosition = null; // Variable to store team position
+      for (let i = 0; i < teamElements.length; i++) {
+        teamName = await teamElements[i].evaluate((element) =>
+          element.textContent.trim().toLowerCase()
+        );
+
+        if (teamName.includes(team)) {
+          teamPosition = i;
+          break; // Exit the loop as soon as the team is found
+        }
+      }
+
+      if (teamPosition !== null) {
+        const teamType = teamPosition === 0 ? "Home Team" : "Away Team";
+        console.log(
+          `Team found: ${team}/${teamName}, at position: ${teamPosition} (${teamType})`
+        );
+      } else {
+        console.log(`Team ${team} not found.`);
       }
 
       console.log("Match validation ok");
-    } catch (error) {}
+    } catch (error) {
+      throw new Error(error);
+    }
 
     //Section 4 - Placing the bet on a single game
-    await betTypeHomeOrAway(page, 'Casa')
+    // Choose a bet between home, away, both teams to score and double chance
+    //await betTypeHomeAwayBothDouble(page, 'Casa')
 
-    const betFieldInput = 'input.mat-input-element[formcontrolname="value"]';
-    await waitAndType(page, betFieldInput, '3')
-    await waitButtonEnabledClick(page, 'button.bet-button.ng-star-inserted')
-    await placeBetConfirmModal(page)
+    // Choose a bet between over or under goals
+    //await betTypeOverUnder(page, '+1.5')
+
+    //await confirmMultipleBet(page, '3')
+
+    
 
     await delay(5000);
 
