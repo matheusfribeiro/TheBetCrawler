@@ -120,20 +120,23 @@ exports.scrapeAndValidate = async (page, team) => {
 
       if (teamName.includes(team)) {
         teamPosition = i;
+        if (teamPosition !== null) {
+          const teamType = teamPosition === 0 ? "Casa" : "Fora";
+          console.log(
+            `Team found: ${team}/${teamName}, at position: (${teamType})`
+          );
+          console.log("Match validation ok");
+        } else {
+          console.log(`Team: ${team} not found.`);
+          throw new Error('mismatch validations')
+        }
         break; // Exit the loop as soon as the team is found
       }
     }
 
-    if (teamPosition !== null) {
-      const teamType = teamPosition === 0 ? "Casa" : "Fora";
-      console.log(
-        `Team found: ${team}/${teamName}, at position: (${teamType})`
-      );
-    } else {
-      console.log(`Team: ${team} not found.`);
-    }
+    
 
-    console.log("Match validation ok");
+    
   } catch (error) {
     throw new Error(error)
   }

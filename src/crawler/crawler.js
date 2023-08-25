@@ -21,7 +21,7 @@ puppeteerExtra.use(StealthPlugin());
 
 const puppeteerOptions = {
   headless: false, // Whether to run the browser in headless mode ('new') or show the browser window (false)
-  slowMo: 1, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
+  slowMo: 10, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
   devtools: false, // Whether to enable DevTools in the browser
   defaultViewport: { width: 1300, height: 900 }, // Sets the initial page viewport. Set to `null` to use the default (800x600).
   args: [
@@ -86,19 +86,24 @@ async function theBetCrawler() {
 
     //Section 3 - Scraping games and validating
     // variables - page, team, 
-    const team = "deportivo"
+    const team = "sport"
     
     await scrapeAndValidate(page, team)
-
+    await betTypeOverUnder(page, '+1.5')
+    
     //Section 4 - Placing the bet on a single game
     // Choose a bet between home, away, both teams to score and double chance
+    /*
+    const team2 = "real madri";
+    await scrapeAndValidate(page, team2)
+    await delay(4000)
     await betTypeHomeAwayBothDouble(page, 'Casa')
 
-    const team2 = "fluminense";
-    await scrapeAndValidate(page, team2)
-    await betTypeOverUnder(page, '+1.5')
+    const team3 = 'estoril'
+    await scrapeAndValidate(page, team3)
+    await betTypeHomeAwayBothDouble(page, 'Fora')
 
-    
+    */
 
     //await confirmMultipleBet(page, '3')
 

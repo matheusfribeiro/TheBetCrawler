@@ -74,26 +74,22 @@ exports.betTypeOverUnder = async (page, overUnder) => {
             title.textContent.trim().replace(/\s+/g, "")
           )
         ).toString();
+        console.log(titleText, titleElement);
 
         if (titleText === overUnder) {
-          const buttonElement = await titleElement.evaluateHandle(
-            (titleElement) => titleElement.closest("button")
-          );
+          const reselectedDivElements = await page.$$(mainDivSelectors);
+          for (const reselect of reselectedDivElements) {
+            console.log(reselect)
+            const buttonElement = await reselect.$('button[_ngcontent-jkr-c48].space-between')
+            if (buttonElement){
 
-          if (buttonElement) {
-            const isButtonDisabled = await buttonElement.evaluate(
-              (button) => button.disabled
-            );
-
-            if (!isButtonDisabled) {
-              await buttonElement.evaluate((button) => button.click());
-              console.log(`Clicked on odd ${titleText}`);
-            } else {
-              console.log(`Button is disabled for odd ${titleText}`);
+              await buttonElement.click()
+              console.log('clicked')
             }
-          } else {
-            console.log(`Button not found for odd ${titleText}`);
           }
+
+          console.log(`Clicked on element for odd ${titleText}`);
+          break;
         }
       } catch (error) {
         console.error("An error occurred:", error);
