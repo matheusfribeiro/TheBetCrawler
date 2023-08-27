@@ -1,5 +1,6 @@
 const {
   waitAndType,
+  delay
 } = require("./helpers");
 
 exports.betTypeHomeAwayBothDouble = async (page, targetBet) => {
@@ -62,8 +63,10 @@ exports.betTypeOverUnder = async (page, overUnder) => {
     }
 
     // Searches for the over/under bet
+    await delay(2000)
     const mainDivSelectors =
       '.content app-odd-button-plus2[type="goals_over_under"] .frame-container';
+    await page.waitForSelector(mainDivSelectors)
     const mainDivElements = await page.$$(mainDivSelectors);
 
     for (const mainDivElement of mainDivElements) {
@@ -74,17 +77,27 @@ exports.betTypeOverUnder = async (page, overUnder) => {
             title.textContent.trim().replace(/\s+/g, "")
           )
         ).toString();
-        console.log(titleText, titleElement);
 
         if (titleText === overUnder) {
-          console.log("entered")
-          await page.waitForSelector('.title')
+          const buttonElement = await titleElement.evaluateHandle(
+            (titleElement) => titleElement.closest("button")
+          );
 
-          await page.evaluate((element) => {
-            element.click()
-            console.log('element', element)
-          }, titleElement)
-          break
+          if (buttonElement) {
+            const isButtonDisabled = await buttonElement.evaluate(
+              (button) => button.disabled
+            );
+
+            if (!isButtonDisabled) {
+              await buttonElement.evaluate((button) => button.click());
+              console.log(`Clicked on odd ${titleText}`);
+              break
+            } else {
+              console.log(`Button is disabled for odd ${titleText}`);
+            }
+          } else {
+            console.log(`Button not found for odd ${titleText}`);
+          }
         }
       } catch (error) {
         console.error("An error occurred:", error);
