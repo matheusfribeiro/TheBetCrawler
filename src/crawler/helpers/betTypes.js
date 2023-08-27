@@ -77,19 +77,14 @@ exports.betTypeOverUnder = async (page, overUnder) => {
         console.log(titleText, titleElement);
 
         if (titleText === overUnder) {
-          const reselectedDivElements = await page.$$(mainDivSelectors);
-          for (const reselect of reselectedDivElements) {
-            console.log(reselect)
-            const buttonElement = await reselect.$('button[_ngcontent-jkr-c48].space-between')
-            if (buttonElement){
+          console.log("entered")
+          await page.waitForSelector('.title')
 
-              await buttonElement.click()
-              console.log('clicked')
-            }
-          }
-
-          console.log(`Clicked on element for odd ${titleText}`);
-          break;
+          await page.evaluate((element) => {
+            element.click()
+            console.log('element', element)
+          }, titleElement)
+          break
         }
       } catch (error) {
         console.error("An error occurred:", error);
