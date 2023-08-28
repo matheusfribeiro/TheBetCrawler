@@ -22,8 +22,10 @@ exports.betTypeHomeAwayBothDouble = async (page, targetBet) => {
         oddButton,
         targetBet
       );
+      console.log(oddButton, titleElement)
 
       if (hasMatchingTitle) {
+        await delay(2000)
         await oddButton.click();
         console.log("Clicked on the bet button with matching BET:", targetBet);
         break; // Break out of the loop after clicking one button

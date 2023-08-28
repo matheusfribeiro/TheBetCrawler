@@ -86,24 +86,24 @@ async function theBetCrawler() {
 
     //Section 3 - Scraping games and validating
     // variables - page, team, 
-    const team = "river plate"
-    const team2 = "deportes temuco"
-    const team3 = "santa fe"
-    const team4 = "huila"
+    const team = "victoriano arenas"
+    const team2 = "cobresal"
+    const team3 = "deportivo cali"
+    const team4 = "atletico tucuman"
     
     
     await scrapeAndValidate(page, team)
-    await betTypeOverUnder(page, '-0.5')
-
-    await scrapeAndValidate(page, team2)
     await betTypeOverUnder(page, '+1.5')
 
+    await scrapeAndValidate(page, team2)
+    await betTypeHomeAwayBothDouble(page, 'Casa')
+
     await scrapeAndValidate(page, team3)
-    await betTypeOverUnder(page, '-3.5')
+    await betTypeHomeAwayBothDouble(page, 'Ambas')
 
     
     await scrapeAndValidate(page, team4)
-    await betTypeOverUnder(page, '+4.5')
+    await betTypeHomeAwayBothDouble(page, 'Fora ou Empate')
     
     //Section 4 - Placing the bet on a single game
     // Choose a bet between home, away, both teams to score and double chance
