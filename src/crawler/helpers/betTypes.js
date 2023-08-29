@@ -6,29 +6,47 @@ const {
 exports.betTypeHomeAwayBothDouble = async (page, targetBet) => {
   try {
     // choose bet field
-    const oddButtonSelector = "app-odd-button-plus2";
+    await delay(2000)
+    const oddButtonSelector = 'div[class="flex-container ng-star-inserted"] app-odd-button-plus2';
+    await page.waitForSelector(oddButtonSelector)
 
-    await page.waitForSelector(oddButtonSelector);
-    const oddButtons = await page.$$(oddButtonSelector);
+    const elements = await page.$$(
+      oddButtonSelector
+    );
 
-    for (const oddButton of oddButtons) {
-      const hasMatchingTitle = await page.evaluate(
-        (button, targetBet) => {
-          const titleElement = button.querySelector(".title");
-          return (
-            titleElement && titleElement.textContent.trim() === targetBet
+    for (const element of elements) {
+      try {
+        const titleElement = await element.$(".title");
+        const titleText = await titleElement.evaluate((title) =>
+          title.textContent.trim().toString().toLowerCase()
+        );
+        console.log(titleText)
+
+        if (titleText === targetBet.toLowerCase()) {
+          const buttonElement = await titleElement.evaluateHandle(
+            (titleElement) => titleElement.closest("button")
           );
-        },
-        oddButton,
-        targetBet
-      );
-      console.log(oddButton, titleElement)
 
-      if (hasMatchingTitle) {
-        await delay(2000)
-        await oddButton.click();
-        console.log("Clicked on the bet button with matching BET:", targetBet);
-        break; // Break out of the loop after clicking one button
+          if (buttonElement) {
+            const isButtonDisabled = await buttonElement.evaluate(
+              (button) => button.disabled
+            );
+
+            if (!isButtonDisabled) {
+              await buttonElement.evaluate((button) => button.click());
+              console.log(
+                `Clicked on the bet button with matching BET: ${targetBet}`
+              );
+              break; // Break out of the loop after clicking one button
+            } else {
+              console.log(`Button is disabled for bet: ${targetBet}`);
+            }
+          } else {
+            console.log(`Button not found for bet: ${targetBet}`);
+          }
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
       }
     }
 
@@ -50,7 +68,7 @@ exports.betTypeOverUnder = async (page, overUnder) => {
     // loops through tablinks to select gols tab
     for (const tabElement of tabElements) {
       const tabText = await tabElement.evaluate((tab) =>
-        tab.textContent.trim()
+        tab.textContent.trim().toString()
       );
       if (tabText === "Gols") {
         foundGolsTab = true;

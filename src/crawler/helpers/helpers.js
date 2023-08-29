@@ -50,6 +50,29 @@ exports.getDate = () => {
   return formattedDate;
 };
 
+exports.getNextDateDay = () => {
+  const currentDate = new Date();
+
+  // Calculate the next day by adding 1 to the current day
+  const nextDay = new Date(currentDate);
+  nextDay.setDate(nextDay.getDate() + 1);
+
+  // Extract day, month, and year
+  const day = nextDay.getDate();
+  const month = nextDay.getMonth() + 1; // Month is 0-based, so add 1
+  const year = nextDay.getFullYear() % 100; // Get last two digits of the year
+
+  // Format numbers with leading zeros if needed
+  const formattedDay = day.toString().padStart(2, "0");
+  const formattedMonth = month.toString().padStart(2, "0");
+  const formattedYear = year.toString().padStart(2, "0");
+
+  // Create the formatted date string
+  const formattedDate = `${formattedDay}/${formattedMonth}/${formattedYear}`;
+  console.log("Next Day:", formattedDate);
+  return formattedDate;
+};
+
 exports.scrapeAndValidate = async (page, team) => {
   try {
     // Clicks on search icon
@@ -97,12 +120,15 @@ exports.scrapeAndValidate = async (page, team) => {
     const matchTime = parts[1];
 
     const currentDate = this.getDate();
+    const nextDate = this.getNextDateDay()
     console.log(
-      `The current date is ${currentDate} and it should be equal to the game date, that is: ${matchDate} and game time: ${matchTime}`
+      `Match date: ${matchDate} - Match time: ${matchTime} - The match date should be equal to the current date: ${currentDate} or the day after: ${nextDate}`
     );
 
     // Fail fast
-    if (currentDate !== matchDate) {
+    if (currentDate === matchDate || nextDate === matchDate) {
+      console.log('Date matches the current date or the next date')
+    } else {
       console.log("Game date does not match current date.");
       throw new Error(`Script halted due to validation mismatch`);
     }
@@ -133,10 +159,6 @@ exports.scrapeAndValidate = async (page, team) => {
         break; // Exit the loop as soon as the team is found
       }
     }
-
-    
-
-    
   } catch (error) {
     throw new Error(error)
   }
