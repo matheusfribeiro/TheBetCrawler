@@ -8,6 +8,7 @@ const {
   waitAndType,
   getDate,
   scrapeAndValidate,
+  takeScreenshot
 } = require("./helpers/helpers");
 const {
   betTypeHomeAwayBothDouble,
@@ -21,7 +22,7 @@ puppeteerExtra.use(StealthPlugin());
 
 const puppeteerOptions = {
   headless: false, // Whether to run the browser in headless mode ('new') or show the browser window (false)
-  slowMo: 10, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
+  slowMo: 25, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
   devtools: false, // Whether to enable DevTools in the browser
   defaultViewport: { width: 1300, height: 900 }, // Sets the initial page viewport. Set to `null` to use the default (800x600).
   args: [
@@ -57,6 +58,8 @@ async function theBetCrawler() {
       throw new Error("Error in opening the page: ", error);
     }
 
+    
+
     //Section 2 - Login
     try {
       console.log("it should login into the account");
@@ -86,46 +89,25 @@ async function theBetCrawler() {
 
     //Section 3 - Scraping games and validating
     // variables - page, team, 
-    const team = "victoriano arenas"
-    const team2 = "corinthians sp"
-    const team3 = "deportivo cali"
-    const team4 = "atletico tucuman"
-
-
+    const team = "deportivo pasto"
+    const team2 = "estudiantes"
+    const team3 = "bolivar"
+    let homeOrAway = ''
     
-
-    await scrapeAndValidate(page, team2)
-    await betTypeHomeAwayBothDouble(page, 'fora ou empate')
-    
-     /*
-    await scrapeAndValidate(page, team)
+    homeOrAway = await scrapeAndValidate(page, team)
     await betTypeOverUnder(page, '+1.5')
-
-    await scrapeAndValidate(page, team2)
-    await betTypeHomeAwayBothDouble(page, 'Casa')
-
-    await scrapeAndValidate(page, team3)
-    await betTypeHomeAwayBothDouble(page, 'Ambas')
+    
+    homeOrAway = await scrapeAndValidate(page, team2)
+    await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`)
+    
+    homeOrAway = await scrapeAndValidate(page, team3)
+    await betTypeHomeAwayBothDouble(page, `ambas`)
 
     
-    await scrapeAndValidate(page, team4)
-    await betTypeHomeAwayBothDouble(page, 'Fora ou Empate')
+    //Section 4 - Placing the bet 
+
     
-    //Section 4 - Placing the bet on a single game
-    // Choose a bet between home, away, both teams to score and double chance
-    /*
-    const team2 = "real madri";
-    await scrapeAndValidate(page, team2)
-    await delay(4000)
-    await betTypeHomeAwayBothDouble(page, 'Casa')
-
-    const team3 = 'estoril'
-    await scrapeAndValidate(page, team3)
-    await betTypeHomeAwayBothDouble(page, 'Fora')
-
-    */
-
-    //await confirmMultipleBet(page, '3')
+    await confirmMultipleBet(page, '3', `${team.replace(/\s+/g, '')}${team2.replace(/\s+/g, '')}${team3.replace(/\s+/g, '')}`)
 
     
 

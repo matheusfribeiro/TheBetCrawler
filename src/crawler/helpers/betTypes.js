@@ -1,6 +1,7 @@
 const {
   waitAndType,
-  delay
+  delay,
+  takeScreenshot
 } = require("./helpers");
 
 exports.betTypeHomeAwayBothDouble = async (page, targetBet) => {
@@ -20,7 +21,6 @@ exports.betTypeHomeAwayBothDouble = async (page, targetBet) => {
         const titleText = await titleElement.evaluate((title) =>
           title.textContent.trim().toString().toLowerCase()
         );
-        console.log(titleText)
 
         if (titleText === targetBet.toLowerCase()) {
           const buttonElement = await titleElement.evaluateHandle(
@@ -128,11 +128,15 @@ exports.betTypeOverUnder = async (page, overUnder) => {
   }
 };
 
-exports.confirmMultipleBet = async (page, betAmount) => {
+exports.confirmMultipleBet = async (page, betAmount, screenshotName) => {
+  await delay(2000)
   const betFieldInput = 'input.mat-input-element[formcontrolname="value"]';
   await waitAndType(page, betFieldInput, betAmount)
   await this.waitButtonEnabledClick(page, 'button.bet-button.ng-star-inserted')
+  await delay(2000)
   await this.placeBetConfirmModal(page)
+  await takeScreenshot(page, screenshotName)
+  
 }
 
 exports.waitButtonEnabledClick = async (page, selector) => {
@@ -174,6 +178,8 @@ exports.placeBetConfirmModal = async (page) => {
       console.log('The span does not have the expected text content.');
       throw new Error('Error validating')
     }
+
+    
   } catch (error) {
     console.log(error)
   }

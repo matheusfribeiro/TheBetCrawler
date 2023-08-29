@@ -1,4 +1,14 @@
+const path = require('path')
+
 exports.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+exports.takeScreenshot = async (page, screenshotName) => {
+  this.delay(2000)
+  await page.screenshot({
+    path: path.join(__dirname, `../../screenshots/${screenshotName}.png`),
+    fullPage: true,
+  })
+}
 
 exports.waitAndClick = async (page, selector) => {
   try {
@@ -75,6 +85,7 @@ exports.getNextDateDay = () => {
 
 exports.scrapeAndValidate = async (page, team) => {
   try {
+    console.log('Searching for a new match...')
     // Clicks on search icon
     await this.waitAndClick(page, 'mat-icon.btn-search[role="img"]');
     // Waits for the input and type team name
@@ -107,6 +118,8 @@ exports.scrapeAndValidate = async (page, team) => {
       }
     }
 
+    this.delay(5000)
+
     // Get the text content from the <div> element
     const divElement = await page.waitForSelector(
       "div.event-date.ng-star-inserted"
@@ -135,31 +148,48 @@ exports.scrapeAndValidate = async (page, team) => {
 
     //Checks if team is home or away
     const teamSelector = ".team-name";
+    await page.waitForSelector(teamSelector)
     const teamElements = await page.$$(teamSelector);
     let teamName = ''
-
+    let homeOrAway = ''
     let teamPosition = null; // Variable to store team position
+
     for (let i = 0; i < teamElements.length; i++) {
       teamName = await teamElements[i].evaluate((element) =>
         element.textContent.trim().toLowerCase()
       );
 
+      this.delay(1000)
+      console.log('Comparing:', teamName, team)
       if (teamName.includes(team)) {
+        console.log(`${teamName} includes ${team}`)
         teamPosition = i;
-        if (teamPosition !== null) {
-          const teamType = teamPosition === 0 ? "Casa" : "Fora";
-          console.log(
-            `Team found: ${team}/${teamName}, at position: (${teamType})`
-          );
-          console.log("Match validation ok");
-        } else {
-          console.log(`Team: ${team} not found.`);
-          throw new Error('mismatch validations')
-        }
-        break; // Exit the loop as soon as the team is found
+        //console.log(teamPosition)
+        break
       }
     }
+
+    if (teamPosition !== null) {
+      console.log('team position is not null')
+      homeOrAway = teamPosition === 0 ? "casa" : "fora";
+      console.log(
+        `Team found: ${team}/${teamName}, at position: (${homeOrAway})`
+      );
+      console.log("Match validation ok");
+    } else {
+      console.log(`Team: ${team} not found.`);
+      throw new Error('mismatch validations')
+    }
+
+    return homeOrAway
   } catch (error) {
-    throw new Error(error)
+    if (error.name === 'TimeoutError') {
+      console.error('Timeout occurred while waiting for an element.');
+    } else if (error.name === 'NoSuchElementError') {
+      console.error('Element not found.');
+    } else {
+      console.error('An error occurred:', error);
+    }
+    throw new Error(error.message);
   }
 }
