@@ -21,8 +21,8 @@ require("dotenv").config();
 puppeteerExtra.use(StealthPlugin());
 
 const puppeteerOptions = {
-  headless: false, // Whether to run the browser in headless mode ('new') or show the browser window (false)
-  slowMo: 25, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
+  headless: 'new', // Whether to run the browser in headless mode ('new') or show the browser window (false)
+  slowMo: 0, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
   devtools: false, // Whether to enable DevTools in the browser
   defaultViewport: { width: 1300, height: 900 }, // Sets the initial page viewport. Set to `null` to use the default (800x600).
   args: [
@@ -89,29 +89,30 @@ async function theBetCrawler() {
 
     //Section 3 - Scraping games and validating
     // variables - page, team, 
-    const team = "deportivo pasto"
-    const team2 = "estudiantes"
-    const team3 = "bolivar"
+    const team = "inter miami"
+    const team2 = "ituano"
+    const team3 = "botafogo rj"
     let homeOrAway = ''
     
-    homeOrAway = await scrapeAndValidate(page, team)
+    homeOrAway = await scrapeAndValidate(page, team2)
     await betTypeOverUnder(page, '+1.5')
     
-    homeOrAway = await scrapeAndValidate(page, team2)
-    await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`)
+    homeOrAway = await scrapeAndValidate(page, team)
+    await betTypeHomeAwayBothDouble(page, `${homeOrAway}`)
     
     homeOrAway = await scrapeAndValidate(page, team3)
-    await betTypeHomeAwayBothDouble(page, `ambas`)
+    await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`)
 
     
     //Section 4 - Placing the bet 
 
     
-    await confirmMultipleBet(page, '3', `${team.replace(/\s+/g, '')}${team2.replace(/\s+/g, '')}${team3.replace(/\s+/g, '')}`)
+    //await confirmMultipleBet(page, '3', `${team.replace(/\s+/g, '')}${team2.replace(/\s+/g, '')}${team3.replace(/\s+/g, '')}`)
 
     
 
     await delay(5000);
+    await takeScreenshot(page, `${team.replace(/\s+/g, '')}${team2.replace(/\s+/g, '')}${team3.replace(/\s+/g, '')}${getDate().replace(/\//g, '')}`)
 
   } catch (error) {
     console.log("Error:", error);

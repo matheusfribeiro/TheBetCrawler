@@ -3,11 +3,12 @@ const path = require('path')
 exports.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 exports.takeScreenshot = async (page, screenshotName) => {
-  this.delay(2000)
+  await this.delay(2000)
   await page.screenshot({
     path: path.join(__dirname, `../../screenshots/${screenshotName}.png`),
     fullPage: true,
   })
+  console.log('screenshot taken')
 }
 
 exports.waitAndClick = async (page, selector) => {
@@ -56,7 +57,7 @@ exports.getDate = () => {
   const formattedYear = year.toString().padStart(2, "0");
 
   const formattedDate = `${formattedDay}/${formattedMonth}/${formattedYear}`;
-  console.log("Current Date:", formattedDate);
+  //console.log("Current Date:", formattedDate);
   return formattedDate;
 };
 
@@ -79,7 +80,7 @@ exports.getNextDateDay = () => {
 
   // Create the formatted date string
   const formattedDate = `${formattedDay}/${formattedMonth}/${formattedYear}`;
-  console.log("Next Day:", formattedDate);
+  //console.log("Next Day:", formattedDate);
   return formattedDate;
 };
 
@@ -118,7 +119,7 @@ exports.scrapeAndValidate = async (page, team) => {
       }
     }
 
-    this.delay(5000)
+    //await this.delay(5000)
 
     // Get the text content from the <div> element
     const divElement = await page.waitForSelector(
@@ -146,6 +147,7 @@ exports.scrapeAndValidate = async (page, team) => {
       throw new Error(`Script halted due to validation mismatch`);
     }
 
+    await this.delay(5000)
     //Checks if team is home or away
     const teamSelector = ".team-name";
     await page.waitForSelector(teamSelector)
@@ -155,16 +157,16 @@ exports.scrapeAndValidate = async (page, team) => {
     let teamPosition = null; // Variable to store team position
 
     for (let i = 0; i < teamElements.length; i++) {
+      await this.delay(1000)
       teamName = await teamElements[i].evaluate((element) =>
         element.textContent.trim().toLowerCase()
       );
 
-      this.delay(1000)
       console.log('Comparing:', teamName, team)
       if (teamName.includes(team)) {
         console.log(`${teamName} includes ${team}`)
         teamPosition = i;
-        //console.log(teamPosition)
+        console.log(teamPosition)
         break
       }
     }
