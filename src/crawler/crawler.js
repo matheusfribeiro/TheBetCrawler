@@ -89,15 +89,15 @@ async function theBetCrawler() {
 
     //Section 3 - Scraping games and validating
     // variables - page, team, 
-    const team = "inter miami"
-    const team2 = "ituano"
-    const team3 = "botafogo rj"
+    const team = "america mg"
+    const team2 = "sao paulo"
+    const team3 = "fluminense"
     let homeOrAway = ''
     
-    homeOrAway = await scrapeAndValidate(page, team2)
+    homeOrAway = await scrapeAndValidate(page, team)
     await betTypeOverUnder(page, '+1.5')
     
-    homeOrAway = await scrapeAndValidate(page, team)
+    homeOrAway = await scrapeAndValidate(page, team2)
     await betTypeHomeAwayBothDouble(page, `${homeOrAway}`)
     
     homeOrAway = await scrapeAndValidate(page, team3)
