@@ -89,9 +89,9 @@ async function theBetCrawler() {
 
     //Section 3 - Scraping games and validating
     // variables - page, team, 
-    const team = "america mg"
-    const team2 = "sao paulo"
-    const team3 = "fluminense"
+    const team = "botafogo rj"
+    const team2 = "ponte preta"
+    const team3 = "orlando city"
     let homeOrAway = ''
     
     homeOrAway = await scrapeAndValidate(page, team)
