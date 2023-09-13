@@ -5,4 +5,14 @@
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 10px;
+}
+.crawler .form {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+.crawler .form input {
+  margin-bottom: 8px;
+  outline: none;
+  border: none;
 }/*# sourceMappingURL=crawler.css.map */

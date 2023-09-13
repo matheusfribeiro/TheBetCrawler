@@ -15,7 +15,7 @@ app.use(express.json())
 //app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 // Set server to receive data via POST - form
-app.use(express.urlencoded({ extended: true }))
+//app.use(express.urlencoded({ extended: true }))
 
 // Routers
 

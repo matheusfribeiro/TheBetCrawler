@@ -3,12 +3,21 @@ const path = require('path')
 exports.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 exports.takeScreenshot = async (page, screenshotName) => {
+  const time = this.getCurrentTime()
   await this.delay(2000)
   await page.screenshot({
-    path: path.join(__dirname, `../../screenshots/${screenshotName}.png`),
+    path: path.join(__dirname, `../../screenshots/${screenshotName}${time}.png`),
     fullPage: true,
   })
   console.log('screenshot taken')
+}
+
+exports.getCurrentTime = () => {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+
+  return `${hours}hr${minutes}min`;
 }
 
 exports.waitAndClick = async (page, selector) => {

@@ -37,7 +37,7 @@ const puppeteerOptions = {
   ],
 };
 
-async function theBetCrawler() {
+async function theBetCrawler({team, betType, amount}) {
   let browser;
   let page;
   let context;
@@ -57,8 +57,6 @@ async function theBetCrawler() {
     } catch (error) {
       throw new Error("Error in opening the page: ", error);
     }
-
-    
 
     //Section 2 - Login
     try {
@@ -88,32 +86,45 @@ async function theBetCrawler() {
     }
 
     //Section 3 - Scraping games and validating
-    // variables - page, team, 
-    const team = "sweden"
-    const team2 = "andorra"
-    const team3 = "romania"
-    let homeOrAway = ''
-    
-    homeOrAway = await scrapeAndValidate(page, team)
-    await betTypeOverUnder(page, '+1.5')
-    
-    homeOrAway = await scrapeAndValidate(page, team2)
-    await betTypeHomeAwayBothDouble(page, `${homeOrAway}`)
-    
-    homeOrAway = await scrapeAndValidate(page, team3)
-    await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`)
+    // variables - page, team,
+    let homeOrAway = "";
+
+    if (betType == "+1.5" || betType == "+2.5") {
+      console.log(`Tipo de aposta: ${betType}`);
+      homeOrAway = await scrapeAndValidate(page, team);
+      await betTypeOverUnder(page, betType);
+    } else if (betType == "vitoria") {
+      console.log(`Tipo de aposta: ${betType}`);
+      homeOrAway = await scrapeAndValidate(page, team);
+      await betTypeHomeAwayBothDouble(page, `${homeOrAway}`);
+    } else if (betType == "dupla chance") {
+      console.log(`Tipo de aposta: ${betType}`);
+      homeOrAway = await scrapeAndValidate(page, team);
+      await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`);
+    }
+
+    /*
+    console.log(`Tipo de aposta: ${betType}`);
+    homeOrAway = await scrapeAndValidate(page, team);
+
+    if (betType === "+1.5" || betType === "+2.5") {
+      await betTypeOverUnder(page, betType);
+    } else if (betType === "vitoria" || betType === "dupla chance") {
+      await betTypeHomeAwayBothDouble(
+        page,
+        betType === "vitoria" ? homeOrAway : `${homeOrAway} ou empate`
+      );
+    }
+    */
 
     
-    //Section 4 - Placing the bet 
 
-    
+    //Section 4 - Placing the bet
+
     //await confirmMultipleBet(page, '3', `${team.replace(/\s+/g, '')}${team2.replace(/\s+/g, '')}${team3.replace(/\s+/g, '')}`)
 
-    
-
     await delay(5000);
-    await takeScreenshot(page, `${team.replace(/\s+/g, '')}${team2.replace(/\s+/g, '')}${team3.replace(/\s+/g, '')}${getDate().replace(/\//g, '')}`)
-
+    await takeScreenshot(page, `${team.replace(/\s+/g, "")}`);
   } catch (error) {
     console.log("Error:", error);
   } finally {
@@ -124,4 +135,6 @@ async function theBetCrawler() {
   }
 }
 
-theBetCrawler();
+//theBetCrawler();
+
+module.exports = theBetCrawler

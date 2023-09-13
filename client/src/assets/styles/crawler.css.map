@@ -1,1 +1,1 @@
-{"version":3,"sources":["crawler.scss","crawler.css"],"names":[],"mappings":"AAAA;EACE,iBAAA;EACA,kBAAA;EACA,QAAA;EACA,SAAA;EACA,gCAAA;EACA,aAAA;ACCF","file":"crawler.css"}
+{"version":3,"sources":["crawler.scss","crawler.css"],"names":[],"mappings":"AAAA;EACE,iBAAA;EACA,kBAAA;EACA,QAAA;EACA,SAAA;EACA,gCAAA;EACA,aAAA;ACCF;ADCE;EACE,aAAA;EACA,sBAAA;EACA,YAAA;ACCJ;ADCI;EACE,kBAAA;EACA,aAAA;EACA,YAAA;ACCN","file":"crawler.css"}
