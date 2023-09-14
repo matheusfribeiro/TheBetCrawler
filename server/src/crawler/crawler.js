@@ -37,7 +37,7 @@ const puppeteerOptions = {
   ],
 };
 
-async function theBetCrawler({team, betType, amount}) {
+async function theBetCrawler({bets, amount}) {
   let browser;
   let page;
   let context;
@@ -88,43 +88,32 @@ async function theBetCrawler({team, betType, amount}) {
     //Section 3 - Scraping games and validating
     // variables - page, team,
     let homeOrAway = "";
-
-    if (betType == "+1.5" || betType == "+2.5") {
-      console.log(`Tipo de aposta: ${betType}`);
-      homeOrAway = await scrapeAndValidate(page, team);
-      await betTypeOverUnder(page, betType);
-    } else if (betType == "vitoria") {
-      console.log(`Tipo de aposta: ${betType}`);
-      homeOrAway = await scrapeAndValidate(page, team);
-      await betTypeHomeAwayBothDouble(page, `${homeOrAway}`);
-    } else if (betType == "dupla chance") {
-      console.log(`Tipo de aposta: ${betType}`);
-      homeOrAway = await scrapeAndValidate(page, team);
-      await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`);
-    }
-
-    /*
-    console.log(`Tipo de aposta: ${betType}`);
-    homeOrAway = await scrapeAndValidate(page, team);
-
-    if (betType === "+1.5" || betType === "+2.5") {
-      await betTypeOverUnder(page, betType);
-    } else if (betType === "vitoria" || betType === "dupla chance") {
-      await betTypeHomeAwayBothDouble(
-        page,
-        betType === "vitoria" ? homeOrAway : `${homeOrAway} ou empate`
-      );
-    }
-    */
-
     
 
+    for (const bet of bets) {
+      console.log(`Placing bet for team: ${bet.team}`);
+
+      if (bet.betType == "+1.5" || bet.betType == "+2.5") {
+        console.log(`Tipo de aposta: ${bet.betType}`);
+        homeOrAway = await scrapeAndValidate(page, bet.team);
+        await betTypeOverUnder(page, bet.betType);
+      } else if (bet.betType == "vitoria") {
+        console.log(`Tipo de aposta: ${bet.betType}`);
+        homeOrAway = await scrapeAndValidate(page, bet.team);
+        await betTypeHomeAwayBothDouble(page, `${homeOrAway}`);
+      } else if (bet.betType == "dupla chance") {
+        console.log(`Tipo de aposta: ${bet.betType}`);
+        homeOrAway = await scrapeAndValidate(page, bet.team);
+        await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`);
+      }
+    }
+
     //Section 4 - Placing the bet
+    const screenshotName = bets.map((bet) => bet.team.replace(/\s+/g, "")).join("");
 
-    //await confirmMultipleBet(page, '3', `${team.replace(/\s+/g, '')}${team2.replace(/\s+/g, '')}${team3.replace(/\s+/g, '')}`)
+    await confirmMultipleBet(page, amount, screenshotName)
 
-    await delay(5000);
-    await takeScreenshot(page, `${team.replace(/\s+/g, "")}`);
+
   } catch (error) {
     console.log("Error:", error);
   } finally {

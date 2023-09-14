@@ -14,9 +14,8 @@ router.get("/testforecho", (req, res, next) => {
 */
 
 router.post("/testforecho", async (req, res, next) => {
-  console.log(req.body)
   const data = req.body
-  console.log(data.team, data.betType, data.amount)
+  console.log(data)
 
   try {
     await theBetCrawler(data);
