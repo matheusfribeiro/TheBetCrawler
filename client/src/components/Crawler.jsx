@@ -1,4 +1,4 @@
-import "../assets/styles/crawler.css";
+import "../assets/styles/crawler/crawler.css";
 import { useForm, useFieldArray } from "react-hook-form";
 import Axios from "axios";
 
@@ -42,7 +42,7 @@ function Crawler() {
 
             {index > 0 && (
               <button type="button" onClick={() => remove(index)}>
-                Remove
+                Remover Aposta
               </button>
             )}
           </div>
@@ -52,13 +52,13 @@ function Crawler() {
           type="button"
           onClick={() => append({ team: "", betType: "vitoria"})}
         >
-          Add Bet
+          Adicionar Aposta
         </button>
 
         <label>Valor</label>
         <input type="number" required {...register("amount")} />
 
-        <button type="submit">Submit</button>
+        <button type="submit">Confirmar</button>
       </form>
     </div>
   );

@@ -1,0 +1,54 @@
+.random-crawler {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px auto;
+}
+
+.form {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 0 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 600px; /* Adjust the width to your preference */
+  display: flex;
+  flex-direction: row; /* Change to row to make inputs side by side */
+  flex-wrap: wrap; /* Allow inputs to wrap to the next line when needed */
+  gap: 20px; /* Add some space between the inputs */
+}
+.form .bet-container {
+  display: flex;
+}
+.form .bet-container .crawler-input {
+  display: flex;
+  flex-direction: column;
+}
+.form .bet-container .crawler-input input,
+.form .bet-container .crawler-input select {
+  width: 150px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  outline: none;
+}
+.form .bet-container button {
+  height: 30px;
+  padding: 10px;
+  margin: auto 5px 0;
+  border-radius: 5px;
+}
+.form label {
+  font-weight: bold;
+}
+.form button {
+  padding: 5px;
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.form button:hover {
+  background-color: #0056b3;
+}/*# sourceMappingURL=randomcrawler.css.map */
