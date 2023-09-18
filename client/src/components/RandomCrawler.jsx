@@ -20,22 +20,32 @@ function Crawler() {
   }
 
 
-  const generateRandomCombination = ({ bets }, minOdd) => {
+  const generateRandomCombinations = ({ bets }, minOdd) => {
     const availableBets = [...bets];
-    const selectedBets = [];
-    let combinedOdd = 1.0;
-  
-    while (combinedOdd < minOdd && availableBets.length > 0) {
+    const combinations = [];
+    let currentCombination = { selectedBets: [], combinedOdd: 1.0 };
+
+    while (availableBets.length > 0) {
+      if (currentCombination.combinedOdd >= minOdd) {
+        combinations.push(currentCombination);
+        currentCombination = { selectedBets: [], combinedOdd: 1.0 };
+      }
+
       const randomIndex = Math.floor(Math.random() * availableBets.length);
       const selectedBet = availableBets[randomIndex];
       const odd = parseFloat(selectedBet.odd);
-  
-      selectedBets.push(selectedBet);
+
+
+      currentCombination.selectedBets.push(selectedBet);
+      currentCombination.combinedOdd *= odd;
       availableBets.splice(randomIndex, 1);
-      combinedOdd *= odd;
     }
-  
-    return { selectedBets, combinedOdd };
+
+    if (currentCombination){
+      combinations.push(currentCombination);
+    }
+
+    return combinations;
   };
   
 
@@ -43,8 +53,8 @@ function Crawler() {
     //data.minOdd = minOdd;
     //data.maxOdd = maxOdd;
     
-    const randomBets = generateRandomCombination(data, minOdd);
-    console.log(minOdd, randomBets.selectedBets, randomBets.combinedOdd)
+    const randomBets = generateRandomCombinations(data, minOdd);
+    console.log(minOdd, randomBets)
 
     
   };
@@ -83,6 +93,8 @@ function Crawler() {
                 <option value="dupla chance">Dupla Chance</option>
                 <option value="+1.5">+1.5</option>
                 <option value="+2.5">+2.5</option>
+                <option value="ambas">Ambas sim</option>
+                <option value="nao ambas">Ambas não</option>
               </select>
             </div>
 

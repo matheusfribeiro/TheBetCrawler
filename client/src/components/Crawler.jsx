@@ -38,6 +38,8 @@ function Crawler() {
               <option value="dupla chance">Dupla Chance</option>
               <option value="+1.5">+1.5</option>
               <option value="+2.5">+2.5</option>
+              <option value="ambas">Ambas sim</option>
+              <option value="nao ambas">Ambas não</option>
             </select>
 
             {index > 0 && (
