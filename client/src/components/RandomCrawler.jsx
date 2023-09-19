@@ -1,4 +1,5 @@
 import "../assets/styles/randomcrawler/randomcrawler.css";
+import MultipleBetBox from "./MultipleBetBox";
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import Axios from "axios";
@@ -7,7 +8,8 @@ import Axios from "axios";
 
 
 function Crawler() {
-  const [minOdd, setMinOdd] = useState(1.1); // State for min odd
+  const [minOdd, setMinOdd] = useState(1.1); 
+  const [randomBets, setRandomBets] = useState([])
   const { register, handleSubmit, control } = useForm();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -23,7 +25,7 @@ function Crawler() {
   const generateRandomCombinations = ({ bets }, minOdd) => {
     const availableBets = [...bets];
     const combinations = [];
-    let currentCombination = { selectedBets: [], combinedOdd: 1.0 };
+    let currentCombination = { selectedBets: [], combinedOdd: 1.0, betAmount: 0 };
 
     while (availableBets.length > 0) {
       if (currentCombination.combinedOdd >= minOdd) {
@@ -38,9 +40,11 @@ function Crawler() {
 
       currentCombination.selectedBets.push(selectedBet);
       currentCombination.combinedOdd *= odd;
+      currentCombination.betAmount = 0
       availableBets.splice(randomIndex, 1);
     }
 
+    // pushes the last combination even if it does not reach the minOdd
     if (currentCombination){
       combinations.push(currentCombination);
     }
@@ -50,14 +54,11 @@ function Crawler() {
   
 
   const generateMultiple = (data) => {
-    //data.minOdd = minOdd;
-    //data.maxOdd = maxOdd;
-    
-    const randomBets = generateRandomCombinations(data, minOdd);
-    console.log(minOdd, randomBets)
+    const generatedBets = generateRandomCombinations(data, minOdd);
+    setRandomBets(generatedBets)
 
-    
   };
+
 
   const onSubmitMultiple = (data) => {
     Axios.post("http://localhost:5172/testforecho", data)
@@ -109,7 +110,11 @@ function Crawler() {
             </div>
 
             {index > 0 && (
-              <button type="button" onClick={() => remove(index)}>
+              <button
+                className="btn"
+                type="button"
+                onClick={() => remove(index)}
+              >
                 Remover
               </button>
             )}
@@ -118,12 +123,15 @@ function Crawler() {
 
         <button
           type="button"
+          className="btn"
           onClick={() => append({ team: "", betType: "vitoria" })}
         >
           Adicionar Aposta
         </button>
 
-        <button type="submit">Gerar Multiplas</button>
+        <button className="btn" type="submit">
+          Gerar Multiplas
+        </button>
 
         {/* Odd range selector */}
         <div className="odd-range">
@@ -136,14 +144,24 @@ function Crawler() {
               step="0.1"
               value={minOdd}
               onChange={(e) => setMinOdd(parseFloat(e.target.value))}
-              
             />
             <span>{minOdd}</span>
           </div>
         </div>
       </form>
       <form className="form" onSubmit={handleSubmit(onSubmitMultiple)}>
-        <div className="display"></div>
+        <div className="display">
+          <div className="multiple-bet-container">
+            {randomBets.map((betCombination, index) => (
+              <MultipleBetBox key={index} betCombination={betCombination} />
+            ))}
+          </div>
+          {randomBets.length > 0 && (
+            <button className="btn" type="submit">
+              Aplicar Apostas
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
