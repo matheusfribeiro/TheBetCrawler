@@ -2,15 +2,18 @@ import "../assets/styles/randomcrawler/randomcrawler.css";
 import MultipleBetBox from "./MultipleBetBox";
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import Axios from "axios";
+import Axios from 'axios'
 
 
 
 
 function Crawler() {
-  const [minOdd, setMinOdd] = useState(1.1); 
   const [randomBets, setRandomBets] = useState([])
-  const { register, handleSubmit, control } = useForm();
+  const [betAmounts, setBetAmounts] = useState([]);
+
+  const { register: registerForm1, handleSubmit: handleSubmit1, control, watch } = useForm();
+  const { handleSubmit: handleSubmit2  } = useForm(); 
+  //const { register, handleSubmit, control, watch } = useForm();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "bets",
@@ -22,15 +25,15 @@ function Crawler() {
   }
 
 
-  const generateRandomCombinations = ({ bets }, minOdd) => {
+  const generateRandomCombinations = ({ bets, minOdd }) => {
     const availableBets = [...bets];
     const combinations = [];
-    let currentCombination = { selectedBets: [], combinedOdd: 1.0, betAmount: 0 };
+    let currentCombination = { selectedBets: [], combinedOdd: 1.0, betAmount: 0};
 
     while (availableBets.length > 0) {
       if (currentCombination.combinedOdd >= minOdd) {
         combinations.push(currentCombination);
-        currentCombination = { selectedBets: [], combinedOdd: 1.0 };
+        currentCombination = { selectedBets: [], combinedOdd: 1.0, betAmount: 0 };
       }
 
       const randomIndex = Math.floor(Math.random() * availableBets.length);
@@ -40,7 +43,7 @@ function Crawler() {
 
       currentCombination.selectedBets.push(selectedBet);
       currentCombination.combinedOdd *= odd;
-      currentCombination.betAmount = 0
+      //currentCombination.betAmount = 3
       availableBets.splice(randomIndex, 1);
     }
 
@@ -51,28 +54,44 @@ function Crawler() {
 
     return combinations;
   };
-  
+
 
   const generateMultiple = (data) => {
-    const generatedBets = generateRandomCombinations(data, minOdd);
+    const generatedBets = generateRandomCombinations(data);
     setRandomBets(generatedBets)
 
   };
 
 
-  const onSubmitMultiple = (data) => {
-    Axios.post("http://localhost:5172/testforecho", data)
+  const handleBetAmountChange = (index, amount) => {
+    // Create a copy of the current bet amounts
+    const updatedBetAmounts = [...betAmounts];
+
+    // Update the bet amount for the specified combination
+    updatedBetAmounts[index] = amount;
+
+    // Update the state with the new bet amounts
+    setBetAmounts(updatedBetAmounts);
+  };
+
+  
+  const submitMultiples = () => {
+    const updatedBetAmount = randomBets.map((betCombination, index) => {
+      return {
+        ...betCombination,
+        betAmount: betAmounts[index],
+      };
+    })
+    console.log(updatedBetAmount)
+    Axios.post("http://localhost:5172/testforecho", updatedBetAmount)
       .then((response) => console.log(response))
       .catch((err) => console.log(err));
   }
-
-  
-
   
 
   return (
     <div className="random-crawler">
-      <form className="form" onSubmit={handleSubmit(generateMultiple)}>
+      <form className="form" onSubmit={handleSubmit1(generateMultiple)}>
         {fields.map((field, index) => (
           <div key={field.id} className="bet-container">
             <div className="crawler-input">
@@ -80,14 +99,14 @@ function Crawler() {
               <input
                 type="text"
                 required
-                {...register(`bets[${index}].team`)}
+                {...registerForm1(`bets[${index}].team`)}
               />
             </div>
 
             <div className="crawler-input">
               <label>Tipo de Aposta</label>
               <select
-                {...register(`bets[${index}].betType`)}
+                {...registerForm1(`bets[${index}].betType`)}
                 defaultValue="vitoria"
               >
                 <option value="vitoria">Vitória</option>
@@ -105,7 +124,7 @@ function Crawler() {
                 type="number"
                 step="0.1"
                 required
-                {...register(`bets[${index}].odd`)}
+                {...registerForm1(`bets[${index}].odd`)}
               />
             </div>
 
@@ -142,26 +161,22 @@ function Crawler() {
               min="1.1"
               max="5"
               step="0.1"
-              value={minOdd}
-              onChange={(e) => setMinOdd(parseFloat(e.target.value))}
+              defaultValue="1.1"
+              {...registerForm1("minOdd")}
             />
-            <span>{minOdd}</span>
+            <span>{watch("minOdd")}</span>
           </div>
         </div>
       </form>
-      <form className="form" onSubmit={handleSubmit(onSubmitMultiple)}>
-        <div className="display">
-          <div className="multiple-bet-container">
-            {randomBets.map((betCombination, index) => (
-              <MultipleBetBox key={index} betCombination={betCombination} />
-            ))}
-          </div>
-          {randomBets.length > 0 && (
-            <button className="btn" type="submit">
-              Aplicar Apostas
-            </button>
-          )}
-        </div>
+      
+      <form onSubmit={handleSubmit2}>
+      {randomBets.map((betCombination, index) => (
+        <MultipleBetBox key={index} betCombination={betCombination} onBetAmountChange={(amount) => handleBetAmountChange(index, amount)}/>
+      ))}
+      <button className="btn" type="submit" onClick={handleSubmit2(submitMultiples)}>
+        Aplicar Apostas
+      </button>
+  
       </form>
     </div>
   );
