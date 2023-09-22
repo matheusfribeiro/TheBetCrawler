@@ -136,7 +136,7 @@ exports.confirmMultipleBet = async (page, betAmount, screenshotName) => {
   await delay(2000)
   await this.placeBetConfirmModal(page)
   await takeScreenshot(page, screenshotName)
-  
+  await delay(2000)
 }
 
 exports.waitButtonEnabledClick = async (page, selector) => {
@@ -145,7 +145,7 @@ exports.waitButtonEnabledClick = async (page, selector) => {
     await page.waitForSelector(selector);
     
     const button = await page.$(selector);
-    const isDisabled = await button.evaluate(button => button.hasAttribute('disabled'));
+    let isDisabled = await button.evaluate(button => button.hasAttribute('disabled'));
     
     // Wait for the button to become enabled
     while (isDisabled) {

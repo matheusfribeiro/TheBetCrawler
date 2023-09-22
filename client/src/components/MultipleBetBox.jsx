@@ -24,8 +24,7 @@ function MultipleBetBox({ betCombination, onBetAmountChange }) {
   
 
   return (
-    <div className="multiple-bet-container">
-        <div className="box">
+    <div className="box">
           {selectedBets.length === 1 && <h3>Simples</h3>}
           {selectedBets.length === 2 && <h3>Dupla</h3>}
           {selectedBets.length === 3 && <h3>Tripla</h3>}
@@ -38,7 +37,6 @@ function MultipleBetBox({ betCombination, onBetAmountChange }) {
               </li>
             ))}
           </ul>
-        </div>
         <input
           type="text"
           min="1"
@@ -46,7 +44,7 @@ function MultipleBetBox({ betCombination, onBetAmountChange }) {
           value={betAmount}
           onChange={(e) => handleBetAmountChange(Number(e.target.value))}
         />
-      </div>
+        </div>
   );
 }
 

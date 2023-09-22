@@ -82,13 +82,11 @@ function Crawler() {
         betAmount: betAmounts[index],
       };
     })
-    console.log(updatedBetAmount)
     Axios.post("http://localhost:5172/testforecho", updatedBetAmount)
       .then((response) => console.log(response))
       .catch((err) => console.log(err));
   }
   
-
   return (
     <div className="random-crawler">
       <form className="form" onSubmit={handleSubmit1(generateMultiple)}>
@@ -140,17 +138,18 @@ function Crawler() {
           </div>
         ))}
 
-        <button
-          type="button"
-          className="btn"
-          onClick={() => append({ team: "", betType: "vitoria" })}
-        >
-          Adicionar Aposta
-        </button>
-
-        <button className="btn" type="submit">
-          Gerar Multiplas
-        </button>
+        <div className="button-wrapper">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => append({ team: "", betType: "vitoria" })}
+          >
+            Adicionar Aposta
+          </button>
+          <button className="btn" type="submit">
+            Gerar Multiplas
+          </button>
+        </div>
 
         {/* Odd range selector */}
         <div className="odd-range">
@@ -168,16 +167,29 @@ function Crawler() {
           </div>
         </div>
       </form>
-      
-      <form onSubmit={handleSubmit2}>
-      {randomBets.map((betCombination, index) => (
-        <MultipleBetBox key={index} betCombination={betCombination} onBetAmountChange={(amount) => handleBetAmountChange(index, amount)}/>
-      ))}
-      <button className="btn" type="submit" onClick={handleSubmit2(submitMultiples)}>
-        Aplicar Apostas
-      </button>
-  
-      </form>
+
+      {randomBets.length > 0 && (
+        <form className="submit-form" onSubmit={handleSubmit2}>
+          <div className="display">
+            {randomBets.map((betCombination, index) => (
+              <MultipleBetBox
+                key={index}
+                betCombination={betCombination}
+                onBetAmountChange={(amount) =>
+                  handleBetAmountChange(index, amount)
+                }
+              />
+            ))}
+          </div>
+          <button
+            className="btn"
+            type="submit"
+            onClick={handleSubmit2(submitMultiples)}
+          >
+            Aplicar Apostas
+          </button>
+        </form>
+      )}
     </div>
   );
 }

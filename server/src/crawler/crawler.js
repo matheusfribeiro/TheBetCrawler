@@ -15,14 +15,15 @@ const {
   confirmMultipleBet,
   betTypeOverUnder,
 } = require("./helpers/betTypes");
+const { multipleBet } = require('./helpers/multipleBet')
 require("dotenv").config();
 
 // Register the Stealth plugin
 puppeteerExtra.use(StealthPlugin());
 
 const puppeteerOptions = {
-  headless: 'new', // Whether to run the browser in headless mode ('new') or show the browser window (false)
-  slowMo: 0, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
+  headless: false, // Whether to run the browser in headless mode ('new') or show the browser window (false)
+  slowMo: 50, // Slows down Puppeteer operations by the specified amount of milliseconds (useful for debugging)
   devtools: false, // Whether to enable DevTools in the browser
   defaultViewport: { width: 1300, height: 900 }, // Sets the initial page viewport. Set to `null` to use the default (800x600).
   args: [
@@ -37,7 +38,7 @@ const puppeteerOptions = {
   ],
 };
 
-async function theBetCrawler({bets, amount}) {
+async function theBetCrawler(bets) {
   let browser;
   let page;
   let context;
@@ -87,31 +88,14 @@ async function theBetCrawler({bets, amount}) {
 
     //Section 3 - Scraping games and validating
     // variables - page, team,
-    let homeOrAway = "";
-    
-
     for (const bet of bets) {
-      console.log(`Placing bet for team: ${bet.team}`);
-
-      if (bet.betType == "+1.5" || bet.betType == "+2.5") {
-        console.log(`Tipo de aposta: ${bet.betType}`);
-        homeOrAway = await scrapeAndValidate(page, bet.team);
-        await betTypeOverUnder(page, bet.betType);
-      } else if (bet.betType == "vitoria") {
-        console.log(`Tipo de aposta: ${bet.betType}`);
-        homeOrAway = await scrapeAndValidate(page, bet.team);
-        await betTypeHomeAwayBothDouble(page, `${homeOrAway}`);
-      } else if (bet.betType == "dupla chance") {
-        console.log(`Tipo de aposta: ${bet.betType}`);
-        homeOrAway = await scrapeAndValidate(page, bet.team);
-        await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`);
-      }
+      const {selectedBets, betAmount} = bet
+      const betAmountString = betAmount.toString();
+      
+      await multipleBet(page, selectedBets, betAmountString); // Pass the current object as an argument to multipleBet
+      
     }
-
-    //Section 4 - Placing the bet
-    const screenshotName = bets.map((bet) => bet.team.replace(/\s+/g, "")).join("");
-
-    await confirmMultipleBet(page, amount, screenshotName)
+    
 
 
   } catch (error) {

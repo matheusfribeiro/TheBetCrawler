@@ -15,10 +15,11 @@ router.get("/testforecho", (req, res, next) => {
 
 router.post("/testforecho", async (req, res, next) => {
   const data = req.body
+  console.log(data)
   console.log(data[0])
 
   try {
-    //await theBetCrawler(data);
+    await theBetCrawler(data);
     res.status(200).send('Bot processing completed.');
   } catch (error) {
     console.error('Bot error:', error);

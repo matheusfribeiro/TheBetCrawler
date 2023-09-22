@@ -1,40 +1,39 @@
 .box {
-  //display: flex;
   border: 1px solid #ccc;
-  padding: 5px 10px;
-  margin: 10px;
+  padding: 10px;
   border-radius: 5px;
   box-shadow: 0px 2px 5px #aaa;
   background-color: #fff;
-  flex: 1; 
-  width: fit-content;
-  max-width: 200px;
-  flex-direction: column; /* Stack label and input vertically */
-  justify-content: space-between; /* Push elements to the top and bottom */
-  //height: 100%; /* Ensure each box takes the full height */
+  max-width: 400px;
+  text-align: center;
+  height: 200px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
 
   h3 {
     font-size: 18px;
     margin: 0;
-    width: fit-content;
+    background-color: #870308;
+    color: #fff;
+    padding: 5px 0;
+    border-radius: 5px;
   }
 
   p {
     font-size: 16px;
     margin: 10px 0;
-    width: fit-content;
+    font-weight: bold;
   }
 
   ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: fit-content;
 
     li {
       font-size: 14px;
       margin: 5px 0;
-      width: fit-content;
     }
   }
 
@@ -42,20 +41,16 @@
     display: block;
     font-size: 14px;
     margin-top: 10px;
-    width: fit-content;
   }
 
-  input {
+  input[type="text"] {
     width: 100px;
     padding: 5px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 3px;
     outline: none;
-    width: fit-content;
-
-    &:focus {
-      border-color: #007bff;
-    }
+    margin: auto;
+    
   }
 }
