@@ -33,13 +33,14 @@ function MultipleBetBox({ betCombination, onBetAmountChange }) {
           <ul>
             {selectedBets.map((bet, index) => (
               <li key={index}>
-                {capitalizeFirstLetter(bet.team)} - {bet.odd}
+                {capitalizeFirstLetter(bet.team)} - {bet.odd} | {bet.betType}
               </li>
             ))}
           </ul>
         <input
           type="text"
-          min="1"
+          min={3}
+          required
           placeholder="Enter amount"
           value={betAmount}
           onChange={(e) => handleBetAmountChange(Number(e.target.value))}

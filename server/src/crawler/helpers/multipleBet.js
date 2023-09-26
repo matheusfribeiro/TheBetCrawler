@@ -15,27 +15,28 @@ exports.multipleBet = async (page, selectedBets, betAmountString) => {
   let homeOrAway = "";
 
   for (const selectedBet of selectedBets) {
-    console.log(`Placing bet for team: ${selectedBet.team}`);
+    const teamToLower = selectedBet.team.toLowerCase();
+    console.log(`Placing bet for team: ${teamToLower}`);
 
     if (selectedBet.betType == "+1.5" || selectedBet.betType == "+2.5") {
       console.log(`Tipo de aposta: ${selectedBet.betType}`);
-      homeOrAway = await scrapeAndValidate(page, selectedBet.team);
+      homeOrAway = await scrapeAndValidate(page, teamToLower);
       await betTypeOverUnder(page, selectedBet.betType);
     } else if (selectedBet.betType == "vitoria") {
       console.log(`Tipo de aposta: ${selectedBet.betType}`);
-      homeOrAway = await scrapeAndValidate(page, selectedBet.team);
+      homeOrAway = await scrapeAndValidate(page, teamToLower);
       await betTypeHomeAwayBothDouble(page, `${homeOrAway}`);
     } else if (selectedBet.betType == "dupla chance") {
       console.log(`Tipo de aposta: ${selectedBet.betType}`);
-      homeOrAway = await scrapeAndValidate(page, selectedBet.team);
+      homeOrAway = await scrapeAndValidate(page, teamToLower);
       await betTypeHomeAwayBothDouble(page, `${homeOrAway} ou empate`);
     } else if (selectedBet.betType == "ambas") {
       console.log(`Tipo de aposta: ${selectedBet.betType}`);
-      homeOrAway = await scrapeAndValidate(page, selectedBet.team);
+      homeOrAway = await scrapeAndValidate(page, teamToLower);
       await betTypeHomeAwayBothDouble(page, `ambas`);
     } else if (selectedBet.betType == "nao ambas") {
       console.log(`Tipo de aposta: ${selectedBet.betType}`);
-      homeOrAway = await scrapeAndValidate(page, selectedBet.team);
+      homeOrAway = await scrapeAndValidate(page, teamToLower);
       await betTypeHomeAwayBothDouble(page, `nao ambas`);
     }
   }

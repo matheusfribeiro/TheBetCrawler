@@ -25,17 +25,14 @@ function Crawler() {
   }
 
 
-  const generateRandomCombinations = ({ bets, minOdd }) => {
+  /* const generateRandomCombinations = ({ bets, minOdd }) => {
+    ORIGINAALLLL
     const availableBets = [...bets];
     const combinations = [];
     let currentCombination = { selectedBets: [], combinedOdd: 1.0, betAmount: 0};
 
     while (availableBets.length > 0) {
-      if (currentCombination.combinedOdd >= minOdd) {
-        combinations.push(currentCombination);
-        currentCombination = { selectedBets: [], combinedOdd: 1.0, betAmount: 0 };
-      }
-
+    
       const randomIndex = Math.floor(Math.random() * availableBets.length);
       const selectedBet = availableBets[randomIndex];
       const odd = parseFloat(selectedBet.odd);
@@ -43,17 +40,82 @@ function Crawler() {
 
       currentCombination.selectedBets.push(selectedBet);
       currentCombination.combinedOdd *= odd;
-      //currentCombination.betAmount = 3
       availableBets.splice(randomIndex, 1);
+
+      if (currentCombination.combinedOdd >= minOdd) {
+        combinations.push(currentCombination);
+        currentCombination = { selectedBets: [], combinedOdd: 1.0, betAmount: 0 };
+      }
     }
+    
 
     // pushes the last combination even if it does not reach the minOdd
     if (currentCombination){
       combinations.push(currentCombination);
     }
 
+    console.log(combinations, 'comb')
+
+    const filteredCombinations = combinations.filter((combination) => {
+      const numSelectedBets = combination.selectedBets.length;
+      if (numSelectedBets >= 3) {
+        return combination.combinedOdd >= 2.1;
+      } else if (numSelectedBets === 2) {
+        return combination.combinedOdd >= 1.6;
+      }
+      return true; // For combinations with different numbers of bets
+    });
+    console.log(filteredCombinations, 'filtered')
+
+    return filteredCombinations;
+  }; */
+
+  const generateRandomCombinations = ({ bets, minOdd }) => {
+    const availableBets = [...bets];
+    const combinations = [];
+    const usedBets = []; // To track used bets
+    let currentCombination = {
+      selectedBets: [],
+      combinedOdd: 1.0,
+      betAmount: 0,
+    };
+
+    while (availableBets.length > 0) {
+      const randomIndex = Math.floor(Math.random() * availableBets.length);
+      const selectedBet = availableBets[randomIndex];
+
+      // Check if the selectedBet has not been used in the current combination
+      if (!usedBets.includes(selectedBet)) {
+        const odd = parseFloat(selectedBet.odd);
+
+        currentCombination.selectedBets.push(selectedBet);
+        currentCombination.combinedOdd *= odd;
+        usedBets.push(selectedBet); // Mark the selectedBet as used
+      }
+
+      availableBets.splice(randomIndex, 1);
+
+      if (
+        currentCombination.combinedOdd >= minOdd &&
+        ((currentCombination.selectedBets.length <= 2 &&
+          currentCombination.combinedOdd >= 1.6) ||
+          (currentCombination.selectedBets.length >= 3 &&
+            currentCombination.combinedOdd >= 2.1))
+      ) {
+        combinations.push(currentCombination);
+        currentCombination = {
+          selectedBets: [],
+          combinedOdd: 1.0,
+          betAmount: 0,
+        };
+      }
+    }
+
     return combinations;
   };
+  
+
+
 
 
   const generateMultiple = (data) => {
@@ -84,7 +146,7 @@ function Crawler() {
     })
     Axios.post("http://localhost:5172/testforecho", updatedBetAmount)
       .then((response) => console.log(response))
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
   }
   
   return (
@@ -98,6 +160,9 @@ function Crawler() {
                 type="text"
                 required
                 {...registerForm1(`bets[${index}].team`)}
+                /* onChange={(e) => {
+                  e.target.value = e.target.value.toLowerCase();
+                }} */
               />
             </div>
 
@@ -120,8 +185,9 @@ function Crawler() {
               <label>Odd</label>
               <input
                 type="number"
-                step="0.1"
+                step="0.01"
                 required
+                min="1.0"
                 {...registerForm1(`bets[${index}].odd`)}
               />
             </div>
