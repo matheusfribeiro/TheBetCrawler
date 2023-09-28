@@ -9,6 +9,7 @@ function Crawler() {
   const [randomBets, setRandomBets] = useState([])
   const [betAmounts, setBetAmounts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [downloadBtn, setDownloadBtn] = useState(false)
 
   const { register: registerForm1, handleSubmit: handleSubmit1, control, watch } = useForm();
   const { handleSubmit: handleSubmit2  } = useForm(); 
@@ -135,6 +136,28 @@ function Crawler() {
     setBetAmounts(updatedBetAmounts);
   };
 
+  const handleDownloadClick = (e) => {
+    e.preventDefault();
+    Axios.get("http://localhost:5172/downloadscreenshots", {
+      responseType: "blob",
+    })
+      .then((response) => {
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "screenshots.zip";
+        document.body.appendChild(a);
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error downloading ZIP file:", error);
+      });
+  };
+
   
   const submitMultiples = () => {
     const updatedBetAmount = randomBets.map((betCombination, index) => {
@@ -148,6 +171,7 @@ function Crawler() {
       .then((response) => {
         console.log(response);
         setIsLoading(false)
+        setDownloadBtn(true)
       })
       .catch((err) => {
         console.log(err)
@@ -255,7 +279,13 @@ function Crawler() {
             ))}
           </div>
           {isLoading ? (
-            <RotatingLines />
+            <RotatingLines
+              strokeColor="red"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="96"
+              visible={true}
+            />
           ) : (
             <button
               className="btn"
@@ -265,6 +295,8 @@ function Crawler() {
               Aplicar Apostas
             </button>
           )}
+          {downloadBtn && <button className="btn" onClick={handleDownloadClick}>Baixar Screenshots</button>}
+          
         </form>
       )}
     </div>
