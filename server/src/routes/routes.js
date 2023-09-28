@@ -20,6 +20,8 @@ router.post("/testforecho", async (req, res, next) => {
 
   try {
     await theBetCrawler(data);
+    
+    
     res.status(200).send('Bot processing completed.');
   } catch (error) {
     console.error('Bot error:', error);

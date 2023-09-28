@@ -2,14 +2,13 @@ import "../assets/styles/randomcrawler/randomcrawler.css";
 import MultipleBetBox from "./MultipleBetBox";
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
+import { RotatingLines } from  'react-loader-spinner'
 import Axios from 'axios'
-
-
-
 
 function Crawler() {
   const [randomBets, setRandomBets] = useState([])
   const [betAmounts, setBetAmounts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { register: registerForm1, handleSubmit: handleSubmit1, control, watch } = useForm();
   const { handleSubmit: handleSubmit2  } = useForm(); 
@@ -23,7 +22,6 @@ function Crawler() {
   if (fields.length === 0) {
     append({ team: "", betType: "vitoria", odd: ""});
   }
-
 
   /* const generateRandomCombinations = ({ bets, minOdd }) => {
     ORIGINAALLLL
@@ -74,6 +72,7 @@ function Crawler() {
     const availableBets = [...bets];
     const combinations = [];
     const usedBets = []; // To track used bets
+    const usedTeams = new Set(); // To track teams already included
     let currentCombination = {
       selectedBets: [],
       combinedOdd: 1.0,
@@ -83,14 +82,17 @@ function Crawler() {
     while (availableBets.length > 0) {
       const randomIndex = Math.floor(Math.random() * availableBets.length);
       const selectedBet = availableBets[randomIndex];
+      const selectedTeam = selectedBet.team;
 
       // Check if the selectedBet has not been used in the current combination
-      if (!usedBets.includes(selectedBet)) {
+      // and if the team is not already in the current combination
+      if (!usedBets.includes(selectedBet) && !usedTeams.has(selectedTeam)) {
         const odd = parseFloat(selectedBet.odd);
 
         currentCombination.selectedBets.push(selectedBet);
         currentCombination.combinedOdd *= odd;
         usedBets.push(selectedBet); // Mark the selectedBet as used
+        usedTeams.add(selectedTeam); // Mark the team as used in the current combination
       }
 
       availableBets.splice(randomIndex, 1);
@@ -108,6 +110,7 @@ function Crawler() {
           combinedOdd: 1.0,
           betAmount: 0,
         };
+        usedTeams.clear(); // Clear the used teams for the next combination
       }
     }
 
@@ -115,15 +118,11 @@ function Crawler() {
   };
   
 
-
-
-
   const generateMultiple = (data) => {
     const generatedBets = generateRandomCombinations(data);
     setRandomBets(generatedBets)
 
   };
-
 
   const handleBetAmountChange = (index, amount) => {
     // Create a copy of the current bet amounts
@@ -143,15 +142,23 @@ function Crawler() {
         ...betCombination,
         betAmount: betAmounts[index],
       };
-    })
+    });
+    setIsLoading(true);
     Axios.post("http://localhost:5172/testforecho", updatedBetAmount)
-      .then((response) => console.log(response))
-      .catch((err) => console.log(err))
+      .then((response) => {
+        console.log(response);
+        setIsLoading(false)
+      })
+      .catch((err) => {
+        console.log(err)
+        setIsLoading(false)
+      });
   }
   
   return (
     <div className="random-crawler">
       <form className="form" onSubmit={handleSubmit1(generateMultiple)}>
+        <h2>Random Crawler</h2>
         {fields.map((field, index) => (
           <div key={field.id} className="bet-container">
             <div className="crawler-input">
@@ -247,13 +254,17 @@ function Crawler() {
               />
             ))}
           </div>
-          <button
-            className="btn"
-            type="submit"
-            onClick={handleSubmit2(submitMultiples)}
-          >
-            Aplicar Apostas
-          </button>
+          {isLoading ? (
+            <RotatingLines />
+          ) : (
+            <button
+              className="btn"
+              type="submit"
+              onClick={handleSubmit2(submitMultiples)}
+            >
+              Aplicar Apostas
+            </button>
+          )}
         </form>
       )}
     </div>

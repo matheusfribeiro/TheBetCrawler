@@ -24,6 +24,7 @@ function Crawler() {
   return (
     <div className="crawler">
       <form className="form" onSubmit={handleSubmit(onSubmit)}>
+        <h2>Crawler</h2>
         {fields.map((field, index) => (
           <div key={field.id} className="bet-container">
             <label>Time</label>
@@ -58,7 +59,7 @@ function Crawler() {
         </button>
 
         <label>Valor</label>
-        <input type="number" required {...register("amount")} />
+        <input type="number" required {...register("betAmount")} />
 
         <button type="submit">Confirmar</button>
       </form>

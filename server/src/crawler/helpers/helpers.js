@@ -1,12 +1,30 @@
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 
 exports.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Function to create a directory with the current date
+function createScreenshotDirectory() {
+  const currentDate = new Date();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+  const day = String(currentDate.getDate()).padStart(2, '0');
+
+  const directoryPath = path.join(__dirname, `../../screenshots/${day}${month}`);
+
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath, { recursive: true });
+  }
+
+  return directoryPath;
+}
+
+
 exports.takeScreenshot = async (page, screenshotName) => {
+  const directoryPath = createScreenshotDirectory();
   const time = this.getCurrentTime()
   await this.delay(2000)
   await page.screenshot({
-    path: path.join(__dirname, `../../screenshots/${screenshotName}${time}.png`),
+    path: path.join(directoryPath, `${screenshotName}${time}.png`),
     fullPage: true,
   })
   console.log('screenshot taken')
