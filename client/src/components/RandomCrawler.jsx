@@ -78,6 +78,7 @@ function Crawler() {
       selectedBets: [],
       combinedOdd: 1.0,
       betAmount: 0,
+      checked: true,
     };
 
     while (availableBets.length > 0) {
@@ -110,6 +111,7 @@ function Crawler() {
           selectedBets: [],
           combinedOdd: 1.0,
           betAmount: 0,
+          checked: true,
         };
         usedTeams.clear(); // Clear the used teams for the next combination
       }
@@ -158,6 +160,12 @@ function Crawler() {
       });
   };
 
+  const handleCheckboxChange = (index) => {
+    const updatedBets = [...randomBets];
+    updatedBets[index].checked = !updatedBets[index].checked;
+    setRandomBets(updatedBets);
+  };
+
   
   const submitMultiples = () => {
     const updatedBetAmount = randomBets.map((betCombination, index) => {
@@ -166,8 +174,13 @@ function Crawler() {
         betAmount: betAmounts[index],
       };
     });
+
+    const checkedCombinations = updatedBetAmount.filter(
+      (betCombination) => betCombination.checked
+    );
+    
     setIsLoading(true);
-    Axios.post("http://localhost:5172/testforecho", updatedBetAmount)
+    Axios.post("http://localhost:5172/testforecho", checkedCombinations)
       .then((response) => {
         console.log(response);
         setIsLoading(false)
@@ -269,6 +282,13 @@ function Crawler() {
         <form className="submit-form" onSubmit={handleSubmit2}>
           <div className="display">
             {randomBets.map((betCombination, index) => (
+              <div key={index} className="bet-container">
+              {/* ...Other bet information */}
+              <input
+                type="checkbox"
+                checked={betCombination.checked || false}
+                onChange={() => handleCheckboxChange(index)}
+              />
               <MultipleBetBox
                 key={index}
                 betCombination={betCombination}
@@ -276,6 +296,8 @@ function Crawler() {
                   handleBetAmountChange(index, amount)
                 }
               />
+            </div>
+              
             ))}
           </div>
           {isLoading ? (

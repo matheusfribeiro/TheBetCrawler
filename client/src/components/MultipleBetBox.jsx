@@ -14,7 +14,7 @@ function MultipleBetBox({ betCombination, onBetAmountChange }) {
 
   
 
-  const handleBetAmountChange = (amount) => {
+  const localHandleBetAmountChange = (amount) => {
     setBetAmount(amount);
 
     // Notify the parent component of the change
@@ -33,7 +33,7 @@ function MultipleBetBox({ betCombination, onBetAmountChange }) {
           <ul>
             {selectedBets.map((bet, index) => (
               <li key={index}>
-                {capitalizeFirstLetter(bet.team)} - {bet.odd} | {bet.betType}
+                {capitalizeFirstLetter(bet.team)} - {bet.odd} | {capitalizeFirstLetter(bet.betType)}
               </li>
             ))}
           </ul>
@@ -43,7 +43,7 @@ function MultipleBetBox({ betCombination, onBetAmountChange }) {
           required
           placeholder="Enter amount"
           value={betAmount}
-          onChange={(e) => handleBetAmountChange(Number(e.target.value))}
+          onChange={(e) => localHandleBetAmountChange(Number(e.target.value))}
         />
         </div>
   );
