@@ -15,10 +15,10 @@ exports.multipleBet = async (page, selectedBets, betAmountString) => {
   let homeOrAway = "";
 
   for (const selectedBet of selectedBets) {
-    const teamToLower = selectedBet.team.toLowerCase();
+    const teamToLower = selectedBet.team.toLowerCase().trim();
     console.log(`Placing bet for team: ${teamToLower}`);
 
-    if (selectedBet.betType == "+1.5" || selectedBet.betType == "+2.5") {
+    if (selectedBet.betType == "+1.5" || selectedBet.betType == "+2.5" || selectedBet.betType == "-3.5") {
       console.log(`Tipo de aposta: ${selectedBet.betType}`);
       homeOrAway = await scrapeAndValidate(page, teamToLower);
       await betTypeOverUnder(page, selectedBet.betType);

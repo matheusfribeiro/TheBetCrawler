@@ -9,7 +9,7 @@ exports.postCrawler = async (req, res, next) => {
   //console.log(data[0])
 
   try {
-    //await theBetCrawler(data);
+    await theBetCrawler(data);
     
     res.status(200).send('Bot processing completed.');
   } catch (error) {

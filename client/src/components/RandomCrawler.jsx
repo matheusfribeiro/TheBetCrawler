@@ -128,13 +128,11 @@ function Crawler() {
   };
 
   const handleBetAmountChange = (index, amount) => {
-    // Create a copy of the current bet amounts
     const updatedBetAmounts = [...betAmounts];
 
     // Update the bet amount for the specified combination
     updatedBetAmounts[index] = amount;
 
-    // Update the state with the new bet amounts
     setBetAmounts(updatedBetAmounts);
   };
 
@@ -204,9 +202,6 @@ function Crawler() {
                 type="text"
                 required
                 {...registerForm1(`bets[${index}].team`)}
-                /* onChange={(e) => {
-                  e.target.value = e.target.value.toLowerCase();
-                }} */
               />
             </div>
 
@@ -220,6 +215,7 @@ function Crawler() {
                 <option value="dupla chance">Dupla Chance</option>
                 <option value="+1.5">+1.5</option>
                 <option value="+2.5">+2.5</option>
+                <option value="-3.5">-3.5</option>
                 <option value="ambas">Ambas sim</option>
                 <option value="nao ambas">Ambas não</option>
               </select>
